@@ -40,6 +40,13 @@ io.on("connection", (socket) => {
         console.log("Event trigger")
         console.log(data)
     })
+
+    socket.on("SEND_MESSAGE", (data) => {
+        messages.push(data)
+
+        io.emit("INIT_MESSAGES", messages)
+    })
+    
 })
 
 server.listen(PORT, () => {
