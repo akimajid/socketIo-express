@@ -84,9 +84,11 @@ router.post("/message/room/:roomId", async (req, res) => {
             room_id: roomId
         }
 
-        await ChatMessages.create(newMessage)
+        const createMessage = await ChatMessages.create(newMessage)
 
-        global.io.to(roomId.toString()).emit("NEW_MESSAGE", newMessage)
+        const findMessage = await ChatMessages.findByPk(createMessage.id, { include: User })
+
+        global.io.to(roomId.toString()).emit("NEW_MESSAGE", findMessage.datavalues)
 
     } catch (err) {
         console.log(err)
