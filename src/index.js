@@ -52,6 +52,7 @@ const { sequelize } = require("./lib/sequelize")
 sequelize.sync({ alter: true })
 
 app.use("/users", require("./routes/user"))
+app.use("/chat", require("./routes/chat"))
 
 server.listen(PORT, () => {
     console.log("Listening in port", PORT)
