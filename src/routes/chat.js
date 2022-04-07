@@ -88,7 +88,7 @@ router.post("/message/room/:roomId", async (req, res) => {
 
         const findMessage = await ChatMessages.findByPk(createMessage.id, { include: User })
 
-        global.io.to(roomId.toString()).emit("NEW_MESSAGE", findMessage.datavalues)
+        global.io.to(roomId.toString()).emit("NEW_MESSAGE", findMessage.dataValues)
 
     } catch (err) {
         console.log(err)
@@ -106,7 +106,8 @@ router.get("/rooms/:roomId/messages", async (req, res) => {
             where: {
                 room_id: roomId
             },
-            include: User
+            include: User,
+            order:[["createdAt", "ASC"]]
         })
 
         return res.status(200).json({
