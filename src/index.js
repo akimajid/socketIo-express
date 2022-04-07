@@ -45,9 +45,13 @@ io.on("connection", (socket) => {
         messages.push(data)
 
         io.emit("INIT_MESSAGES", messages)
-    })
-    
+    })    
 })
+
+const { sequelize } = require("./lib/sequelize")
+sequelize.sync({ alter: true })
+
+app.use("/users", require("./routes/user"))
 
 server.listen(PORT, () => {
     console.log("Listening in port", PORT)
