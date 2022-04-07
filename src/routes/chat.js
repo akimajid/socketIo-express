@@ -24,9 +24,16 @@ router.post("/rooms", async (req, res) => {
             })
         )
 
-        return res.status(201).json({
+        res.status(201).json({
             message: "Room created"
         })
+
+        const findsRooms = await Room.findAll({
+            include: User
+        })
+
+        global.io.emit("NEW_ROOM_CREATED", findsRooms)
+        
     } catch (err) {
         console.log(err)
         return res.status(500).json({
@@ -103,6 +110,39 @@ router.get("/rooms/:roomId/messages", async (req, res) => {
         return res.status(200).json({
             message: "Find chat message",
             result: findMessages
+        })
+    } catch (err) {
+        console.log(err)
+        return res.status(500).json({
+            message: "Server error"
+        })
+    }
+})
+
+router.get("/join/:userId/room/:roomId", async (req, res) => {
+    try {
+        const { userId, roomId } = req.params
+
+        const findUserInRoom = await UserRoom.findOne({
+            where: {
+                user_id: userId,
+                room_id: roomId
+            }
+        })
+
+        if (!findUserInRoom) {
+            return res.status(400).json({
+                message: "User is not a participant of the room"
+            })
+        }
+
+        global.io.on("connection", (socket) => {
+            console.log("User", userId, "Joined room", roomId)
+            socket.join(roomId.toString())
+        })
+
+        return res.status(200).json({
+            message: "Joined room"
         })
     } catch (err) {
         console.log(err)
